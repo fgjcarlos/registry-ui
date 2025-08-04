@@ -1,9 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Dialog from '../../components/Dialog';
+import AlertDialog from '../../components/AlertDialog';
 import { useDashboard } from '../../hooks/useDashboard';
 import Button from '../../components/Button';
 import Logo from '../../components/Logo';
+import { FaInfoCircle, FaTrashAlt } from 'react-icons/fa';
 
 export default function Dashboard() {
   const {
@@ -14,6 +17,36 @@ export default function Dashboard() {
     handleRefresh,
     handleLogout
   } = useDashboard();
+
+  // Adjust the type for an image
+  interface Image {
+    name: string;
+    tags: string[];
+    lastModified?: string;
+    size?: string; // Allow undefined for compatibility
+  }
+
+  // Update state and handlers with proper types
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isPullDialogOpen, setIsPullDialogOpen] = useState(false);
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
+  const handleView = (image: Image) => {
+    setSelectedImage(image);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleDelete = (image: Image) => {
+    setSelectedImage(image);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handlePull = (image: Image) => {
+    setSelectedImage(image);
+    setIsPullDialogOpen(true);
+  };
 
   if (!userInfo) {
     return (
@@ -38,7 +71,7 @@ export default function Dashboard() {
                 <p className="text-base-content/70">Connected as {userInfo.username}</p>
               </div>
             </div>
-            <Button variant="ghost" onClick={handleLogout}>
+            <Button variant="ghost" onClick={() => setIsLogoutDialogOpen(true)}>
               Logout
             </Button>
           </div>
@@ -66,7 +99,7 @@ export default function Dashboard() {
                 <p className="text-base-content/70">Connected as {userInfo.username}</p>
               </div>
             </div>
-            <Button variant="ghost" onClick={handleLogout}>
+            <Button variant="ghost" onClick={() => setIsLogoutDialogOpen(true)}>
               Logout
             </Button>
           </div>
@@ -78,7 +111,7 @@ export default function Dashboard() {
             <p className="text-base-content/70 mb-6 text-center max-w-md">{error}</p>
             <div className="flex gap-4">
               <Button onClick={handleRefresh}>Try Again</Button>
-              <Button variant="ghost" onClick={handleLogout}>Back to Login</Button>
+              <Button variant="ghost" onClick={() => setIsLogoutDialogOpen(true)}>Back to Login</Button>
             </div>
           </div>
         </div>
@@ -102,7 +135,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={handleRefresh}>
               🔄 Refresh
             </Button>
-            <Button variant="ghost" onClick={handleLogout}>
+            <Button variant="ghost" onClick={() => setIsLogoutDialogOpen(true)}>
               Logout
             </Button>
           </div>
@@ -178,11 +211,14 @@ export default function Dashboard() {
                       </td>
                       <td>
                         <div className="flex gap-1">
-                          <Button size="xs" variant="outline">
+                          <Button size="xs" variant="outline" onClick={() => handleView(image)}>
                             View
                           </Button>
-                          <Button size="xs" variant="ghost">
+                          <Button size="xs" variant="ghost" onClick={() => handlePull(image)}>
                             Pull
+                          </Button>
+                          <Button size="xs" variant="error" onClick={() => handleDelete(image)}>
+                            Delete
                           </Button>
                         </div>
                       </td>
@@ -212,6 +248,81 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* View Dialog */}
+        {isViewDialogOpen && selectedImage && (
+          <Dialog open={isViewDialogOpen} onClose={() => setIsViewDialogOpen(false)}>
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <FaInfoCircle size={24} color="var(--color-primary)" />
+                <h3 className="text-lg font-semibold">Image Details</h3>
+              </div>
+              <p><strong>Name:</strong> {selectedImage.name}</p>
+              <p><strong>Tags:</strong> {selectedImage.tags.join(', ') || 'No tags'}</p>
+              <p><strong>Last Modified:</strong> {selectedImage.lastModified ? new Date(selectedImage.lastModified).toLocaleString() : 'Unknown'}</p>
+              <p><strong>Size:</strong> {selectedImage.size}</p>
+              <div className="mt-4 flex justify-end">
+                <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
+              </div>
+            </div>
+          </Dialog>
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        {isDeleteDialogOpen && selectedImage && (
+          <AlertDialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)}>
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <FaTrashAlt size={24} color="var(--color-error)" />
+                <h3 className="text-lg font-semibold text-error">Confirm Deletion</h3>
+              </div>
+              <p>Are you sure you want to delete the image <strong>{selectedImage?.name}</strong>? This action <strong>cannot</strong> be undone.</p>
+              <div className="flex justify-end gap-4 mt-4">
+                <Button variant="error" onClick={() => {
+                  // Add delete logic here
+                  setIsDeleteDialogOpen(false);
+                }}>Delete</Button>
+                <Button variant="ghost" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+              </div>
+            </div>
+          </AlertDialog>
+        )}
+
+        {/* Pull Info Dialog */}
+        {isPullDialogOpen && selectedImage && (
+          <Dialog open={isPullDialogOpen} onClose={() => setIsPullDialogOpen(false)}>
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <FaInfoCircle className="text-primary text-2xl" />
+                <h3 className="text-lg font-semibold">Pull Instructions</h3>
+              </div>
+              <p>To pull this image, run the following command:</p>
+              <code className="block bg-base-300 p-2 rounded font-mono mb-4">
+                docker pull {userInfo.registryUrl}/{selectedImage.name}:{selectedImage.tags[0] || 'latest'}
+              </code>
+              <div className="mt-4 flex justify-end">
+                <Button onClick={() => setIsPullDialogOpen(false)}>Close</Button>
+              </div>
+            </div>
+          </Dialog>
+        )}
+
+        {/* Logout Confirmation Dialog */}
+        {isLogoutDialogOpen && (
+          <AlertDialog
+            open={isLogoutDialogOpen}
+            onClose={() => setIsLogoutDialogOpen(false)}
+            onConfirm={() => {
+              handleLogout();
+              setIsLogoutDialogOpen(false);
+            }}
+          >
+            <div className="p-4">
+              <h3 className="text-lg font-semibold text-error">Confirm Logout</h3>
+              <p>Are you sure you want to log out?</p>
+            </div>
+          </AlertDialog>
         )}
       </div>
     </div>
