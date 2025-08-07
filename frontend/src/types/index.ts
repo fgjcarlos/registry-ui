@@ -23,3 +23,10 @@ export interface LoginResponse {
   error?: string;
   authType?: 'basic' | 'bearer';
 }
+
+export interface Image {
+  name: string;
+  tags: string[];
+  lastModified?: string;
+  size?: string;
+}
