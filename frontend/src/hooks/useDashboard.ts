@@ -2,18 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RegistryInfo } from '../services/registryApiService';
+import { RegistryInfo, listImagesPaginated } from '../services/registryApiService';
 import { SessionService } from '../services/sessionService';
 
 export function useDashboard() {
   const router = useRouter();
-  const [registryInfo, setRegistryInfo] = useState<RegistryInfo | null>(null);
+  const [registryInfo, setRegistryInfo] = useState<RegistryInfo>({
+    images: [],
+    totalImages: 0,
+    registryUrl: '',
+  }); // Initialize with default values
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<{
     username: string;
     registryUrl: string;
   } | null>(null);
+  const [page, setPage] = useState(1); // Add state for pagination
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -40,20 +45,26 @@ export function useDashboard() {
       try {
         setIsLoading(true);
         setError(null);
-        console.log('Fetching images from registry...');
-        
-        // Use server-side API that handles authentication via HttpOnly cookies
-        const response = await fetch('/api/registry/images', {
-          method: 'GET',
-          credentials: 'include',
+        console.log('Fetching images from registry with pagination...');
+
+        if (!userInfo) return;
+
+        const pageSize = 10; // Number of images per page
+
+        const { images, nextPage } = await listImagesPaginated(page, pageSize); // Adjusted to match the updated function signature
+
+
+        setRegistryInfo({
+          images: images, // Ensure images is always an array
+          totalImages: images.length,
+          registryUrl: userInfo.registryUrl,
         });
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch images: ${response.statusText}`);
+        if (nextPage) {
+          setPage(nextPage); // Update page state if there's a next page
         }
 
-        const info = await response.json();
-        setRegistryInfo(info);
+        console.log('Next page:', nextPage);
       } catch (err) {
         console.error('Failed to fetch registry images:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch registry data');
@@ -63,7 +74,7 @@ export function useDashboard() {
     };
 
     fetchImages();
-  }, [userInfo]);
+  }, [userInfo, page]); // Add 'page' to the dependency array
 
   const handleRefresh = async () => {
     if (!userInfo) return;
@@ -71,21 +82,19 @@ export function useDashboard() {
     try {
       setIsLoading(true);
       setError(null);
-      
-      const response = await fetch('/api/registry/images', {
-        method: 'GET',
-        credentials: 'include',
+
+      const { images, nextPage } = await listImagesPaginated(1, 10); // Fetch first page with size 10
+
+      setRegistryInfo({
+        images: images, // Directly assign the images array from the API response
+        totalImages: images.length,
+        registryUrl: userInfo.registryUrl,
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch images: ${response.statusText}`);
-      }
-
-      const info = await response.json();
-      setRegistryInfo(info);
+      console.log('Next page:', nextPage);
     } catch (err) {
-      console.error('Failed to fetch registry images:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch registry data');
+      console.error('Failed to refresh registry images:', err);
+      setError(err instanceof Error ? err.message : 'Failed to refresh registry data');
     } finally {
       setIsLoading(false);
     }

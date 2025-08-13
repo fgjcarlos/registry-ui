@@ -125,3 +125,41 @@ export class RegistryApiService {
     }
   }
 }
+
+/**
+ * Fetches a paginated list of images from the Docker Registry v2 API.
+ * @param registryUrl - The base URL of the Docker Registry.
+ * @param page - The page number to fetch.
+ * @param pageSize - The number of images per page.
+ * @returns A promise resolving to the list of images and pagination info.
+ */
+export async function listImagesPaginated(page: number, pageSize: number) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+  });
+
+  try {
+    const response = await fetch(`/api/registry/images?${params.toString()}`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch images: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const nextPage = data.nextPage || null;
+
+    console.log('Fetched images:', data);
+
+    return {
+      images: data.images,
+      nextPage,
+    };
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    throw new Error('Failed to fetch images from the Docker Registry.');
+  }
+}
