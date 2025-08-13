@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from './Button';
+import Dialog from './Dialog';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -7,22 +8,24 @@ interface ConfirmationDialogProps {
   message: React.ReactNode;
   onConfirm: () => void;
   onClose: () => void;
+  icon?: React.ReactNode; // Optional icon prop
 }
 
-const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, title, message, onConfirm, onClose }) => {
-  if (!isOpen) return null;
-
+const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, title, message, onConfirm, onClose, icon }) => {
   return (
-    <div className="modal modal-open">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg">{title}</h3>
-        <div className="py-4">{message}</div>
+    <Dialog open={isOpen} onClose={onClose}>
+      <div className="p-4">
+        <div className="flex items-center gap-2">
+          {icon && <span>{icon}</span>} {/* Render icon if provided */}
+          <h3 className="font-bold text-lg">{title}</h3>
+        </div>
+        <div className="py-4 break-words">{message}</div>
         <div className="modal-action">
           <Button className="btn btn-error" onClick={onConfirm}>Confirm</Button>
           <Button className="btn" onClick={onClose}>Cancel</Button>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 };
 

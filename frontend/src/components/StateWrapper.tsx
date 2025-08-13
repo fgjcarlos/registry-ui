@@ -1,4 +1,7 @@
 import React from 'react';
+import { LoadingState } from './LoadingState';
+import ErrorState from './ErrorState';
+import EmptyState from './EmptyState';
 
 interface StateWrapperProps {
   isLoading?: boolean;
@@ -10,30 +13,15 @@ interface StateWrapperProps {
 
 const StateWrapper: React.FC<StateWrapperProps> = ({ isLoading, error, empty, emptyMessage, children }) => {
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-        <p className="text-base-content/70">Loading...</p>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="text-error text-6xl mb-4">⚠️</div>
-        <h2 className="text-xl font-semibold text-base-content mb-2">Error</h2>
-        <p className="text-base-content/70 mb-6 text-center max-w-md">{error}</p>
-      </div>
-    );
+    return <ErrorState error={error} />;
   }
 
   if (empty) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-base-content/70">{emptyMessage || 'No data available.'}</p>
-      </div>
-    );
+    return <EmptyState message={emptyMessage} />;
   }
 
   return <>{children}</>;

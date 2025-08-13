@@ -28,7 +28,7 @@ const ImageDetailsDialog: React.FC<ImageDetailsDialogProps> = ({
           <h3 className="text-lg font-semibold">Image Details</h3>
         </div>
         <p><strong>Name:</strong> {name}</p>
-        <p><strong>Tags:</strong> {tags.join(', ') || 'No tags'}</p>
+        <p><strong>Tags:</strong> {tags && tags.length > 0 ? tags.join(', ') : 'No tags'}</p>
         <p><strong>Last Modified:</strong> {lastModified ? new Date(lastModified).toLocaleString() : 'Unknown'}</p>
         <p><strong>Size:</strong> {size}</p>
         <div className="mt-4 flex justify-end">

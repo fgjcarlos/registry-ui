@@ -21,4 +21,14 @@ const DashboardState: React.FC<DashboardStateProps> = ({ username, onLogout, chi
   );
 };
 
+const LoadingState: React.FC = () => {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
+      <p className="text-base-content/70">Loading...</p>
+    </div>
+  );
+};
+
 export default DashboardState;
+export { LoadingState };

@@ -1,8 +1,8 @@
 import React from 'react';
 import Button from './Button';
 
-// Remove local Image interface and import from shared types
-import { Image } from 'types/index';
+// Fix import path for Image interface
+import { Image } from '../types';
 
 interface ImagesTableProps {
   images: Image[];
@@ -37,7 +37,7 @@ const ImagesTable: React.FC<ImagesTableProps> = ({ images, onView, onPull, onDel
                 <td>
                   <div className="flex flex-wrap gap-1">
                     {image.tags.length > 0 ? (
-                      image.tags.slice(0, 3).map((tag, tagIndex) => (
+                      image.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
                         <span key={tagIndex} className="badge badge-outline badge-sm">
                           {tag}
                         </span>
