@@ -7,6 +7,7 @@ export const PaginatedImagesResponseSchema = z.object({
       tags: z.array(z.string()),
     })
   ),
-  nextPage: z.number().nullable(),
+  // nextPage may be a number, null (explicitly no next page) or omitted by the API
+  nextPage: z.number().nullable().optional(),
 });
 

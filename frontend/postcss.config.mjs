@@ -1,5 +1,9 @@
 const config = {
-  plugins: ["@tailwindcss/postcss"],
+  plugins: {
+    // Use the PostCSS wrapper package name required by Tailwind v4
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  },
 };
 
 export default config;

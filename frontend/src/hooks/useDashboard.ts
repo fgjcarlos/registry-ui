@@ -56,13 +56,24 @@ export function useDashboard() {
         // Validate response using Zod
         const parsedData = PaginatedImagesResponseSchema.parse(data);
 
-        setRegistryInfo((prev) => ({
-          ...prev,
-          images: [...prev.images, ...parsedData.images],
-          totalImages: prev.totalImages + parsedData.images.length,
-        }));
+        // When fetching the first page, replace images to avoid duplicates
+        // caused by double-invocation of effects in React Strict Mode during dev.
+        if (page === 1) {
+          setRegistryInfo((prev) => ({
+            ...prev,
+            images: parsedData.images,
+            totalImages: parsedData.images.length,
+          }));
+        } else {
+          setRegistryInfo((prev) => ({
+            ...prev,
+            images: [...prev.images, ...parsedData.images],
+            totalImages: prev.totalImages + parsedData.images.length,
+          }));
+        }
 
-        if (parsedData.nextPage) {
+        // Only update page if API returned a numeric nextPage
+        if (typeof parsedData.nextPage === 'number') {
           setPage(parsedData.nextPage);
         }
       } catch (err) {
@@ -91,7 +102,8 @@ export function useDashboard() {
         registryUrl: userInfo.registryUrl,
       });
 
-      console.log('Next page:', nextPage);
+      console.log('Next page:', typeof nextPage === 'number' ? nextPage : 'none');
+      if (typeof nextPage === 'number') setPage(nextPage);
     } catch (err) {
       console.error('Failed to refresh registry images:', err);
       setError(err instanceof Error ? err.message : 'Failed to refresh registry data');
