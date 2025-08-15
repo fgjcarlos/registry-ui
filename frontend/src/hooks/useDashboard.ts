@@ -4,8 +4,13 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SessionService } from '@/services/sessionService';
 import { listImagesPaginated } from '@/services/registryApiService';
-import { PaginatedImagesResponseSchema } from '@/validators/imageValidators';
+import {
+  initializeDashboardLogic,
+  fetchImagesLogic,
+} from '@/lib/dashboardLogic';
 import { useAppStore } from '@/store/useAppStore';
+
+console.log('[hook] useDashboard module loaded');
 
 export function useDashboard() {
   const router = useRouter();
@@ -26,55 +31,31 @@ export function useDashboard() {
   const setError = useAppStore((s) => s.setError);
 
   useEffect(() => {
-    const initializeDashboard = async () => {
-      try {
-        const user = await SessionService.getCurrentUser();
-        if (!user) {
-          router.push('/');
-          return;
-        }
-        setUser(user);
-      } catch (err) {
-        console.error('Failed to get user info:', err);
-        router.push('/');
-      }
-    };
-
-    initializeDashboard();
+    // delegate to pure logic for easier testing
+    initializeDashboardLogic(SessionService, router.push, setUser).catch((err) => {
+      console.error('initializeDashboardLogic error', err);
+    });
   }, [router, setUser]);
 
   useEffect(() => {
     if (!userInfo) return;
 
-    const fetchImages = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const data = await listImagesPaginated(page, 10);
-        const parsedData = PaginatedImagesResponseSchema.parse(data);
-
-        if (page === 1) {
-          setImages(parsedData.images, parsedData.images.length);
-        } else {
-          appendImages(parsedData.images);
-        }
-
-        if (typeof parsedData.nextPage === 'number') {
-          setPage(parsedData.nextPage);
-        }
-      } catch (err) {
-        console.error('Failed to fetch registry images:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch registry data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchImages();
+    // delegate to pure logic for easier testing
+    fetchImagesLogic(
+      { listImagesPaginated },
+      page,
+      setLoading,
+      setError,
+      setImages,
+      appendImages,
+      setPage
+    ).catch((err) => {
+      console.error('fetchImagesLogic error', err);
+    });
   }, [userInfo, page, setImages, appendImages, setPage, setLoading, setError]);
 
   const handleRefresh = async () => {
+  console.log('[hook] handleRefresh called');
     if (!userInfo) return;
 
     try {
@@ -95,6 +76,7 @@ export function useDashboard() {
   };
 
   const handleLogout = async () => {
+  console.log('[hook] handleLogout called');
     await SessionService.clearSession();
     useAppStore.getState().clear();
     router.push('/');

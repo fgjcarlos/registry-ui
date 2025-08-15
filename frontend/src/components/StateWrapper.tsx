@@ -4,27 +4,21 @@ import ErrorState from './ErrorState';
 import EmptyState from './EmptyState';
 
 interface StateWrapperProps {
-  isLoading?: boolean;
+  state: 'loading' | 'error' | 'empty' | 'success';
   error?: string;
-  empty?: boolean;
-  emptyMessage?: string;
   children: React.ReactNode;
 }
 
-const StateWrapper: React.FC<StateWrapperProps> = ({ isLoading, error, empty, emptyMessage, children }) => {
-  if (isLoading) {
-    return <LoadingState />;
-  }
+const StateWrapper: React.FC<StateWrapperProps> = ({state, error, children}) => {
 
-  if (error) {
-    return <ErrorState error={error} />;
-  }
+  const stateWrapper = {
+    loading: <LoadingState />,
+    error: <ErrorState error={error || 'Error occurred'} />,
+    empty: <EmptyState message="No images available." />,
+    success: <>{children}</>,
+  };
 
-  if (empty) {
-    return <EmptyState message={emptyMessage} />;
-  }
-
-  return <>{children}</>;
+  return stateWrapper[state]
 };
 
 export default StateWrapper;

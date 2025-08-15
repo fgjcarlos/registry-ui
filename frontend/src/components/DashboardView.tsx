@@ -73,10 +73,8 @@ const DashboardView: React.FC = () => {
 
         {/* Images Table */}
         <StateWrapper
-          isLoading={isLoading}
           error={error || undefined}
-          empty={!registryInfo?.images?.length}
-          emptyMessage="No images available."
+          state={isLoading ? 'loading' : error ? 'error' : registryInfo?.images?.length ? 'success' : 'empty'}
         >
           <ImagesTable
             images={registryInfo.images || []} // Ensure images is always an array
