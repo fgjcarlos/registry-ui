@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!username || !password || !registryUrl) {
       return NextResponse.json(
-        { error: 'Username, password, and registry URL are required' },
+        { success: false, error: 'Username, password, and registry URL are required' },
         { status: 400 }
       );
     }
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     if (!authResult.success) {
       return NextResponse.json(
-        { error: authResult.error },
+        { success: false, error: authResult.error },
         { status: 401 }
       );
     }
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

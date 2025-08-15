@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { useReactTable, ColumnDef, getCoreRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table';
 import Button from './Button';
 import { Image } from '../types';

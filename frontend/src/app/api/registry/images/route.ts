@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { RegistryApiService } from '../../../../services/registryApiService';
-
-interface SessionData {
-  username: string;
-  registryUrl: string;
-  authToken: string;
-  authType: 'basic' | 'bearer';
-  loginTime: number;
-}
+import { RegistryInfoSchema } from '@/validators/authValidators';
+import { SessionData } from '@/types';
 
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -22,7 +16,7 @@ export async function GET() {
     }
 
     const sessionData: SessionData = JSON.parse(sessionCookie.value);
-    
+
     // Check if session is expired
     if (Date.now() - sessionData.loginTime > SESSION_DURATION) {
       return NextResponse.json({ error: 'Session expired' }, { status: 401 });
@@ -35,7 +29,10 @@ export async function GET() {
       sessionData.authType
     );
 
-    return NextResponse.json(registryInfo);
+    // Validate registryInfo using Zod
+    const validatedRegistryInfo = RegistryInfoSchema.parse(registryInfo);
+
+    return NextResponse.json(validatedRegistryInfo);
 
   } catch (error) {
     console.error('Registry API error:', error);

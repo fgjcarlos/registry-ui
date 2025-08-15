@@ -1,7 +1,5 @@
-interface UserInfo {
-  username: string;
-  registryUrl: string;  
-}
+import { UserInfo } from '@/types';
+import { GetSessionResponseSchema, SaveSessionResponseSchema } from '@/validators/authValidators';
 
 export class SessionService {
   /**
@@ -17,13 +15,34 @@ export class SessionService {
         body: JSON.stringify({ username, password, registryUrl }),
       });
 
-      const data = await response.json();
-
+      // Handle non-OK responses before validation
       if (!response.ok) {
-        return { success: false, error: data.error || 'Login failed' };
+        const errorData = await response.json();
+        console.error('Full API error response:', errorData);
+
+        // Handle 401 Unauthorized specifically
+        if (response.status === 401) {
+          return { success: false, error: 'Unauthorized: Invalid credentials' };
+        }
+
+        return { success: false, error: errorData.error || 'Login failed' };
       }
 
-      return { success: true, user: data.user };
+      const data = await response.json();
+
+      // Log the full API response for debugging
+      console.log('Full API response:', data);
+
+      // Validate response using Zod
+      const parsedData = SaveSessionResponseSchema.parse(data);
+
+      // Handle cases where only 'error' is present
+      if ('error' in parsedData) {
+        return { success: false, error: parsedData.error };
+      }
+
+      // Fallback for undefined 'success'
+      return { success: parsedData.success ?? false, user: parsedData.user, error: parsedData.error };
     } catch (error) {
       console.error('Failed to save session:', error);
       return { success: false, error: 'Network error' };
@@ -40,7 +59,10 @@ export class SessionService {
         credentials: 'include', // Include cookies
       });
 
-      return await response.json();
+      const data = await response.json();
+
+      // Validate response using Zod
+      return GetSessionResponseSchema.parse(data);
     } catch (error) {
       console.error('Failed to get session:', error);
       return { authenticated: false };

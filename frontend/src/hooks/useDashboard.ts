@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RegistryInfo, listImagesPaginated } from '../services/registryApiService';
 import { SessionService } from '../services/sessionService';
+import { RegistryInfo } from '@/types';
+import { listImagesPaginated } from '@/services/registryApiService';
+import { PaginatedImagesResponseSchema } from '@/validators/imageValidators';
 
 export function useDashboard() {
   const router = useRouter();
@@ -49,22 +51,20 @@ export function useDashboard() {
 
         if (!userInfo) return;
 
-        const pageSize = 10; // Number of images per page
+        const data = await listImagesPaginated(page, 10);
 
-        const { images, nextPage } = await listImagesPaginated(page, pageSize); // Adjusted to match the updated function signature
+        // Validate response using Zod
+        const parsedData = PaginatedImagesResponseSchema.parse(data);
 
+        setRegistryInfo((prev) => ({
+          ...prev,
+          images: [...prev.images, ...parsedData.images],
+          totalImages: prev.totalImages + parsedData.images.length,
+        }));
 
-        setRegistryInfo({
-          images: images, // Ensure images is always an array
-          totalImages: images.length,
-          registryUrl: userInfo.registryUrl,
-        });
-
-        if (nextPage) {
-          setPage(nextPage); // Update page state if there's a next page
+        if (parsedData.nextPage) {
+          setPage(parsedData.nextPage);
         }
-
-        console.log('Next page:', nextPage);
       } catch (err) {
         console.error('Failed to fetch registry images:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch registry data');
