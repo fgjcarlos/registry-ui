@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import type React from 'react';
 import { useLoginForm } from '@/hooks/useLoginForm';
 
 // Mock router
@@ -42,7 +43,7 @@ describe('useLoginForm', () => {
     });
 
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: () => {} } as unknown as Event);
+      await result.current.handleSubmit({ preventDefault: () => {} } as unknown as React.FormEvent<HTMLFormElement>);
     });
 
     // After successful login, errors should be empty
@@ -59,7 +60,7 @@ describe('useLoginForm', () => {
     });
 
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: () => {} } as unknown as Event);
+      await result.current.handleSubmit({ preventDefault: () => {} } as unknown as React.FormEvent<HTMLFormElement>);
     });
 
     expect(result.current.errors.username).toBeDefined();

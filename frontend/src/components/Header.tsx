@@ -4,26 +4,19 @@ import { FiLogOut } from 'react-icons/fi';
 import Logo from './Logo';
 import Button from './Button';
 import { useAppStore } from '@/store/useAppStore';
-import { useRouter } from 'next/navigation';
 
 // ...props handled internally; keep component focused on store-driven session
 
 type NewHeaderProps = {
   onRefresh?: () => void;
+  onLogout?: () => void;
 };
 
-const Header: React.FC<NewHeaderProps> = ({ onRefresh }) => {
-  const router = useRouter();
+const Header: React.FC<NewHeaderProps> = ({ onRefresh, onLogout }) => {
+
   const storeUser = useAppStore((s) => s.user);
-  const storeLogout = useAppStore((s) => s.logout);
   const displayUsername = storeUser?.username ?? '';
 
-  const handleLogout = async () => {
-    const ok = typeof window !== 'undefined' ? window.confirm('Are you sure you want to log out?') : true;
-    if (!ok) return;
-    await storeLogout();
-    router.push('/');
-  };
   return (
     <div className="flex items-center justify-between mb-8">
       <div className="flex items-center gap-4">
@@ -39,7 +32,7 @@ const Header: React.FC<NewHeaderProps> = ({ onRefresh }) => {
             <FiRefreshCw className="inline-block mr-1" /> Refresh
           </Button>
         )}
-        <Button variant="ghost" size="md" onClick={handleLogout}>
+        <Button variant="ghost" size="md" onClick={onLogout}>
           <FiLogOut className="inline-block mr-1" /> Logout
         </Button>
       </div>
