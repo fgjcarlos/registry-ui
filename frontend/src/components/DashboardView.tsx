@@ -5,7 +5,6 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useViewImage } from '../hooks/useViewImage';
 import { useDeleteImage } from '../hooks/useDeleteImage';
 import { usePullImage } from '../hooks/usePullImage';
-import { useDialogManager } from '../hooks/useDialogManager';
 import Header from './Header';
 import ConfirmationDialog from './ConfirmationDialog';
 import ImageDetailsDialog from './ImageDetailsDialog';
@@ -14,7 +13,7 @@ import RegistryInfo from './RegistryInfo';
 import ImagesTable from './ImagesTable';
 import StateWrapper from './StateWrapper';
 import LoadingScreen from './LoadingScreen';
-import { FaTrash, FaSignOutAlt } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 import BackgroundWrapper from './BackgroundWrapper';
 import ContainerWrapper from './ContainerWrapper';
 
@@ -25,7 +24,6 @@ const DashboardView: React.FC = () => {
     error,
     userInfo,
     handleRefresh,
-    handleLogout
   } = useDashboard();
 
   const {
@@ -49,11 +47,7 @@ const DashboardView: React.FC = () => {
     closeDialog: closePullDialog,
   } = usePullImage();
 
-  const {
-    dialogState: logoutDialogState,
-    openDialog: openLogoutDialog,
-    closeDialog: closeLogoutDialog,
-  } = useDialogManager();
+  // logout handled inside Header via store
 
   if (!userInfo) {
     return <LoadingScreen />;
@@ -63,11 +57,7 @@ const DashboardView: React.FC = () => {
     <BackgroundWrapper>
       <ContainerWrapper>
         {/* Header */}
-        <Header 
-          username={userInfo.username} 
-          onLogout={() => openLogoutDialog('logout')} 
-          onRefresh={handleRefresh} 
-        />
+  <Header onRefresh={handleRefresh} />
 
         {/* Registry Info */}
         <RegistryInfo 
@@ -125,20 +115,7 @@ const DashboardView: React.FC = () => {
           />
         )}
 
-        {/* Logout Confirmation Dialog */}
-        {logoutDialogState.logout && (
-          <ConfirmationDialog
-            isOpen={logoutDialogState.logout}
-            title="Confirm Logout"
-            icon={<FaSignOutAlt className="text-warning" />} // Add logout icon
-            message="Are you sure you want to log out?"
-            onConfirm={() => {
-              handleLogout();
-              closeLogoutDialog('logout');
-            }}
-            onClose={() => closeLogoutDialog('logout')}
-          />
-        )}
+  {/* Logout confirmation moved to Header (uses window.confirm) */}
       </ContainerWrapper>
     </BackgroundWrapper>
   );
