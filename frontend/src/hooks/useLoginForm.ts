@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { FormData, FormErrors } from '../types';
 import { RegistryService } from '../services/registryService';
 import { SessionService } from '../services/sessionService';
+import { useAppStore } from '@/store/useAppStore';
 
 export function useLoginForm() {
   const router = useRouter();
@@ -57,16 +58,10 @@ export function useLoginForm() {
     setErrors({});
 
     try {
-      const result = await SessionService.saveSession(
-        formData.username,
-        formData.password,
-        formData.registryUrl
-      );
+      const result = await useAppStore.getState().login(formData.username, formData.password, formData.registryUrl);
 
       if (result.success) {
-        // Navigate to dashboard
         router.push('/dashboard');
-        
         console.log('Login successful!', result.user);
       } else {
         setErrors({ general: result.error || 'Login failed' });
@@ -89,7 +84,8 @@ export function useLoginForm() {
 
   const resetForm = async () => {
     await SessionService.clearSession();
-    setErrors({});
+  useAppStore.getState().clear();
+  setErrors({});
   };
 
   return {

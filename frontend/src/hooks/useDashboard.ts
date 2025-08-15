@@ -1,26 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { SessionService } from '../services/sessionService';
-import { RegistryInfo } from '@/types';
+import { SessionService } from '@/services/sessionService';
 import { listImagesPaginated } from '@/services/registryApiService';
 import { PaginatedImagesResponseSchema } from '@/validators/imageValidators';
+import { useAppStore } from '@/store/useAppStore';
 
 export function useDashboard() {
   const router = useRouter();
-  const [registryInfo, setRegistryInfo] = useState<RegistryInfo>({
-    images: [],
-    totalImages: 0,
-    registryUrl: '',
-  }); // Initialize with default values
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [userInfo, setUserInfo] = useState<{
-    username: string;
-    registryUrl: string;
-  } | null>(null);
-  const [page, setPage] = useState(1); // Add state for pagination
+
+  // Zustand selectors
+  const userInfo = useAppStore((s) => s.user);
+  const registryImages = useAppStore((s) => s.registryImages);
+  const totalImages = useAppStore((s) => s.totalImages);
+  const page = useAppStore((s) => s.page);
+  const isLoading = useAppStore((s) => s.isLoading);
+  const error = useAppStore((s) => s.error);
+
+  const setUser = useAppStore((s) => s.setUser);
+  const setImages = useAppStore((s) => s.setImages);
+  const appendImages = useAppStore((s) => s.appendImages);
+  const setPage = useAppStore((s) => s.setPage);
+  const setLoading = useAppStore((s) => s.setLoading);
+  const setError = useAppStore((s) => s.setError);
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -30,7 +33,7 @@ export function useDashboard() {
           router.push('/');
           return;
         }
-        setUserInfo(user);
+        setUser(user);
       } catch (err) {
         console.error('Failed to get user info:', err);
         router.push('/');
@@ -38,41 +41,25 @@ export function useDashboard() {
     };
 
     initializeDashboard();
-  }, [router]);
+  }, [router, setUser]);
 
   useEffect(() => {
     if (!userInfo) return;
 
     const fetchImages = async () => {
       try {
-        setIsLoading(true);
+        setLoading(true);
         setError(null);
-        console.log('Fetching images from registry with pagination...');
-
-        if (!userInfo) return;
 
         const data = await listImagesPaginated(page, 10);
-
-        // Validate response using Zod
         const parsedData = PaginatedImagesResponseSchema.parse(data);
 
-        // When fetching the first page, replace images to avoid duplicates
-        // caused by double-invocation of effects in React Strict Mode during dev.
         if (page === 1) {
-          setRegistryInfo((prev) => ({
-            ...prev,
-            images: parsedData.images,
-            totalImages: parsedData.images.length,
-          }));
+          setImages(parsedData.images, parsedData.images.length);
         } else {
-          setRegistryInfo((prev) => ({
-            ...prev,
-            images: [...prev.images, ...parsedData.images],
-            totalImages: prev.totalImages + parsedData.images.length,
-          }));
+          appendImages(parsedData.images);
         }
 
-        // Only update page if API returned a numeric nextPage
         if (typeof parsedData.nextPage === 'number') {
           setPage(parsedData.nextPage);
         }
@@ -80,49 +67,45 @@ export function useDashboard() {
         console.error('Failed to fetch registry images:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch registry data');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     fetchImages();
-  }, [userInfo, page]); // Add 'page' to the dependency array
+  }, [userInfo, page, setImages, appendImages, setPage, setLoading, setError]);
 
   const handleRefresh = async () => {
     if (!userInfo) return;
 
     try {
-      setIsLoading(true);
+      setLoading(true);
       setError(null);
 
-      const { images, nextPage } = await listImagesPaginated(1, 10); // Fetch first page with size 10
+      const { images, nextPage } = await listImagesPaginated(1, 10);
 
-      setRegistryInfo({
-        images: images, // Directly assign the images array from the API response
-        totalImages: images.length,
-        registryUrl: userInfo.registryUrl,
-      });
+      setImages(images, images.length);
 
-      console.log('Next page:', typeof nextPage === 'number' ? nextPage : 'none');
       if (typeof nextPage === 'number') setPage(nextPage);
     } catch (err) {
       console.error('Failed to refresh registry images:', err);
       setError(err instanceof Error ? err.message : 'Failed to refresh registry data');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const handleLogout = async () => {
     await SessionService.clearSession();
+    useAppStore.getState().clear();
     router.push('/');
   };
 
   return {
-    registryInfo,
+    registryInfo: { images: registryImages, totalImages, registryUrl: userInfo?.registryUrl ?? '' },
     isLoading,
     error,
     userInfo,
     handleRefresh,
-    handleLogout
+    handleLogout,
   };
 }
