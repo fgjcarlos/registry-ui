@@ -2,24 +2,22 @@ import React from 'react';
 import Dialog from './Dialog';
 import Button from './Button';
 import { FaInfoCircle } from 'react-icons/fa';
+import { Image } from '@/types';
 
 interface ImageDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  name: string;
-  tags: string[];
-  lastModified?: string;
-  size?: string;
+  image: Image
 }
 
 const ImageDetailsDialog: React.FC<ImageDetailsDialogProps> = ({
   isOpen,
   onClose,
-  name,
-  tags,
-  lastModified,
-  size
+  image
 }) => {
+
+  const  { name, tags, lastModified, size } = image
+
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <div className="p-4">

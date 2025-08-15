@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { LoginForm } from "../components";
 import { useLoginForm } from "../hooks/useLoginForm";
 import HomeHeader from "./HomeHeader";
+import LoginForm from './LoginForm';
 
 const HomeView: React.FC = () => {
   const {

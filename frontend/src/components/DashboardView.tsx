@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useDashboardLogic } from '../hooks/useDashboardLogic';
 import { useDashboard } from '../hooks/useDashboard';
+import { useViewImage } from '../hooks/useViewImage';
+import { useDeleteImage } from '../hooks/useDeleteImage';
+import { usePullImage } from '../hooks/usePullImage';
+import { useDialogManager } from '../hooks/useDialogManager';
 import Header from './Header';
-import EmptyState from './EmptyState';
 import ConfirmationDialog from './ConfirmationDialog';
 import ImageDetailsDialog from './ImageDetailsDialog';
 import PullInstructionsDialog from './PullInstructionsDialog';
@@ -25,14 +27,31 @@ const DashboardView: React.FC = () => {
   } = useDashboard();
 
   const {
-    selectedImage,
-    dialogState,
-    openDialog,
-    closeDialog,
+    selectedImage: viewImage,
+    dialogState: viewDialogState,
     handleView,
+    closeDialog: closeViewDialog,
+  } = useViewImage();
+
+  const {
+    selectedImage: deleteImage,
+    dialogState: deleteDialogState,
     handleDelete,
+    closeDialog: closeDeleteDialog,
+  } = useDeleteImage();
+
+  const {
+    selectedImage: pullImage,
+    dialogState: pullDialogState,
     handlePull,
-  } = useDashboardLogic();
+    closeDialog: closePullDialog,
+  } = usePullImage();
+
+  const {
+    dialogState: logoutDialogState,
+    openDialog: openLogoutDialog,
+    closeDialog: closeLogoutDialog,
+  } = useDialogManager();
 
   if (!userInfo) {
     return <LoadingScreen />;
@@ -44,7 +63,7 @@ const DashboardView: React.FC = () => {
         {/* Header */}
         <Header 
           username={userInfo.username} 
-          onLogout={() => openDialog('logout')} 
+          onLogout={() => openLogoutDialog('logout')} 
           onRefresh={handleRefresh} 
         />
 
@@ -61,68 +80,61 @@ const DashboardView: React.FC = () => {
           empty={!registryInfo?.images?.length} 
           emptyMessage="No images available."
         >
-          {registryInfo && registryInfo.images?.length > 0 ? (
             <ImagesTable 
               images={registryInfo.images || []} // Ensure images is always an array
               onView={handleView} 
               onPull={handlePull} 
               onDelete={handleDelete} 
             />
-          ) : (
-            <EmptyState message={`No images available for registry: ${userInfo.registryUrl}`} />
-          )}
         </StateWrapper>
 
         {/* View Dialog */}
-        {dialogState.view && selectedImage && (
+        {viewDialogState.view && viewImage && (
           <ImageDetailsDialog
-            isOpen={dialogState.view}
-            name={selectedImage.name}
-            tags={selectedImage.tags}
-            lastModified={selectedImage.lastModified}
-            size={selectedImage.size}
-            onClose={() => closeDialog('view')}
+            isOpen={viewDialogState.view}
+            image={viewImage}
+            onClose={() => closeViewDialog('view')}
           />
         )}
 
         {/* Delete Confirmation Dialog */}
-        {dialogState.delete && selectedImage && (
+        {deleteDialogState.delete && deleteImage && (
           <ConfirmationDialog
-            isOpen={dialogState.delete}
+            isOpen={deleteDialogState.delete}
             title="Confirm Delete"
             icon={<FaTrash className="text-error" />} // Add delete icon
-            message={`Are you sure you want to delete the image \"${selectedImage.name}\"? This action cannot be undone.`}
+            message={`Are you sure you want to delete the image "${deleteImage.name}"? This action cannot be undone.`}
             onConfirm={() => {
-              handleDelete(selectedImage);
-              closeDialog('delete');
+              handleDelete(deleteImage);
+              closeDeleteDialog('delete');
             }}
-            onClose={() => closeDialog('delete')}
+            onClose={() => closeDeleteDialog('delete')}
           />
         )}
 
         {/* Pull Info Dialog */}
-        {dialogState.pull && selectedImage && (
+        {pullDialogState.pull && pullImage && (
           <PullInstructionsDialog 
-            isOpen={dialogState.pull} 
-            onClose={() => closeDialog('pull')} 
+            isOpen={pullDialogState.pull} 
+            onClose={() => closePullDialog('pull')} 
             registryUrl={userInfo.registryUrl} 
-            imageName={selectedImage.name} 
-            tag={selectedImage.tags[0]} 
+            imageName={pullImage.name} 
+            tag={pullImage.tags[0]} 
           />
         )}
 
         {/* Logout Confirmation Dialog */}
-        {dialogState.logout && (
+        {logoutDialogState.logout && (
           <ConfirmationDialog
-            isOpen={dialogState.logout}
+            isOpen={logoutDialogState.logout}
             title="Confirm Logout"
             icon={<FaSignOutAlt className="text-warning" />} // Add logout icon
             message="Are you sure you want to log out?"
             onConfirm={() => {
               handleLogout();
-              closeDialog('logout');
+              closeLogoutDialog('logout');
             }}
-            onClose={() => closeDialog('logout')}
+            onClose={() => closeLogoutDialog('logout')}
           />
         )}
       </div>
