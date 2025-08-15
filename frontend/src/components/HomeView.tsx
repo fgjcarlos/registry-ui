@@ -4,6 +4,8 @@ import React from 'react';
 import { useLoginForm } from "../hooks/useLoginForm";
 import HomeHeader from "./HomeHeader";
 import LoginForm from './LoginForm';
+import BackgroundWrapper from './BackgroundWrapper';
+import CenteredContainer from './CenteredContainer';
 
 const HomeView: React.FC = () => {
   const {
@@ -15,8 +17,8 @@ const HomeView: React.FC = () => {
   } = useLoginForm();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300">
-      <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen">
+    <BackgroundWrapper>
+      <CenteredContainer>
         <HomeHeader />
         <LoginForm
           formData={formData}
@@ -25,8 +27,8 @@ const HomeView: React.FC = () => {
           onSubmit={handleSubmit}
           onFieldChange={updateFormData}
         />
-      </div>
-    </div>
+      </CenteredContainer>
+    </BackgroundWrapper>
   );
 };
 

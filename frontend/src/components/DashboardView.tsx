@@ -15,6 +15,8 @@ import ImagesTable from './ImagesTable';
 import StateWrapper from './StateWrapper';
 import LoadingScreen from './LoadingScreen';
 import { FaTrash, FaSignOutAlt } from 'react-icons/fa';
+import BackgroundWrapper from './BackgroundWrapper';
+import ContainerWrapper from './ContainerWrapper';
 
 const DashboardView: React.FC = () => {
   const {
@@ -58,8 +60,8 @@ const DashboardView: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300">
-      <div className="container mx-auto px-4 py-8">
+    <BackgroundWrapper>
+      <ContainerWrapper>
         {/* Header */}
         <Header 
           username={userInfo.username} 
@@ -137,8 +139,8 @@ const DashboardView: React.FC = () => {
             onClose={() => closeLogoutDialog('logout')}
           />
         )}
-      </div>
-    </div>
+      </ContainerWrapper>
+    </BackgroundWrapper>
   );
 };
 

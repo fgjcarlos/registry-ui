@@ -1,15 +1,7 @@
-export interface RegistryImage {
-  name: string;
-  tags: string[];
-  lastModified?: string;
-  size?: string;
-}
+import { RegistryImage, RegistryInfo } from '@/types';
+import { TagsResponseSchema, RegistryInfoSchema } from '../validators/authValidators';
+import { PaginatedImagesResponseSchema } from '@/validators/imageValidators';
 
-export interface RegistryInfo {
-  images: RegistryImage[];
-  totalImages: number;
-  registryUrl: string;
-}
 
 export class RegistryApiService {
   /**
@@ -63,7 +55,10 @@ export class RegistryApiService {
     }
 
     const data = await response.json();
-    return data.tags || [];
+
+    // Validate response using imported Zod schema
+    const parsedData = TagsResponseSchema.parse(data);
+    return parsedData.tags || [];
   }
 
   /**
@@ -113,14 +108,17 @@ export class RegistryApiService {
         }
       }
 
-      return {
+      const registryInfo = {
         images,
         totalImages: images.length,
-        registryUrl: originalUrl
+        registryUrl: originalUrl,
       };
 
+      // Validate registryInfo using imported Zod schema
+      return RegistryInfoSchema.parse(registryInfo);
+
     } catch (error) {
-      console.error('Failed to fetch registry images:', error);
+      console.error('Error fetching all images:', error);
       throw error;
     }
   }
@@ -146,20 +144,35 @@ export async function listImagesPaginated(page: number, pageSize: number) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch images: ${response.statusText}`);
+      // try to parse JSON error body, otherwise use statusText
+      try {
+        const errBody = await response.json();
+        throw new Error(errBody.error || response.statusText || 'Failed to fetch images');
+      } catch {
+        const txt = await response.text();
+        throw new Error(txt || response.statusText || 'Failed to fetch images');
+      }
     }
 
-    const data = await response.json();
-    const nextPage = data.nextPage || null;
+    // Parse JSON safely
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch {
+      const txt = await response.text();
+      throw new Error(`Invalid JSON response from images endpoint: ${txt}`);
+    }
 
-    console.log('Fetched images:', data);
+    // Validate and normalize the response using Zod
+    const parsed = PaginatedImagesResponseSchema.parse(data);
 
-    return {
-      images: data.images,
-      nextPage,
-    };
+    console.log('Fetched images (validated):', parsed);
+
+    return parsed;
   } catch (error) {
     console.error('Error fetching images:', error);
-    throw new Error('Failed to fetch images from the Docker Registry.');
+    // Re-throw original error so callers/tests can inspect specific failure reasons
+    if (error instanceof Error) throw error;
+    throw new Error(String(error));
   }
 }

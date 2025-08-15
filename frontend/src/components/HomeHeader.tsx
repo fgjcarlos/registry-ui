@@ -1,5 +1,5 @@
 import React from 'react';
-import { Logo } from "../components";
+import Logo from './Logo';
 
 const HomeHeader: React.FC = () => {
   return (

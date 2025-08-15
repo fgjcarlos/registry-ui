@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RegistryInfo, listImagesPaginated } from '../services/registryApiService';
 import { SessionService } from '../services/sessionService';
+import { RegistryInfo } from '@/types';
+import { listImagesPaginated } from '@/services/registryApiService';
+import { PaginatedImagesResponseSchema } from '@/validators/imageValidators';
 
 export function useDashboard() {
   const router = useRouter();
@@ -49,22 +51,31 @@ export function useDashboard() {
 
         if (!userInfo) return;
 
-        const pageSize = 10; // Number of images per page
+        const data = await listImagesPaginated(page, 10);
 
-        const { images, nextPage } = await listImagesPaginated(page, pageSize); // Adjusted to match the updated function signature
+        // Validate response using Zod
+        const parsedData = PaginatedImagesResponseSchema.parse(data);
 
-
-        setRegistryInfo({
-          images: images, // Ensure images is always an array
-          totalImages: images.length,
-          registryUrl: userInfo.registryUrl,
-        });
-
-        if (nextPage) {
-          setPage(nextPage); // Update page state if there's a next page
+        // When fetching the first page, replace images to avoid duplicates
+        // caused by double-invocation of effects in React Strict Mode during dev.
+        if (page === 1) {
+          setRegistryInfo((prev) => ({
+            ...prev,
+            images: parsedData.images,
+            totalImages: parsedData.images.length,
+          }));
+        } else {
+          setRegistryInfo((prev) => ({
+            ...prev,
+            images: [...prev.images, ...parsedData.images],
+            totalImages: prev.totalImages + parsedData.images.length,
+          }));
         }
 
-        console.log('Next page:', nextPage);
+        // Only update page if API returned a numeric nextPage
+        if (typeof parsedData.nextPage === 'number') {
+          setPage(parsedData.nextPage);
+        }
       } catch (err) {
         console.error('Failed to fetch registry images:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch registry data');
@@ -91,7 +102,8 @@ export function useDashboard() {
         registryUrl: userInfo.registryUrl,
       });
 
-      console.log('Next page:', nextPage);
+      console.log('Next page:', typeof nextPage === 'number' ? nextPage : 'none');
+      if (typeof nextPage === 'number') setPage(nextPage);
     } catch (err) {
       console.error('Failed to refresh registry images:', err);
       setError(err instanceof Error ? err.message : 'Failed to refresh registry data');

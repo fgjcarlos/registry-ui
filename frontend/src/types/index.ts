@@ -30,3 +30,29 @@ export interface Image {
   lastModified?: string;
   size?: string;
 }
+
+export interface RegistryImage {
+  name: string;
+  tags: string[];
+  lastModified?: string;
+  size?: string;
+}
+
+export interface RegistryInfo {
+  images: RegistryImage[];
+  totalImages: number;
+  registryUrl: string;
+}
+ 
+export interface SessionData {
+  username: string;
+  registryUrl: string;
+  authToken: string;
+  authType: 'basic' | 'bearer';
+  loginTime: number;
+}
+
+export interface UserInfo {
+  username: string;
+  registryUrl: string;  
+}
