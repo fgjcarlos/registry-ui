@@ -29,4 +29,4 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, title, 
   );
 };
 
-export default ConfirmationDialog;
+export default React.memo(ConfirmationDialog);

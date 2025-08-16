@@ -29,4 +29,4 @@ const RegistryInfo: React.FC<RegistryInfoProps> = ({ registryUrl, totalImages })
   );
 };
 
-export default RegistryInfo;
+export default React.memo(RegistryInfo);

@@ -129,4 +129,4 @@ const ImagesTable: React.FC<ImagesTableProps> = ({ images, onView, onPull, onDel
   );
 };
 
-export default ImagesTable;
+export default React.memo(ImagesTable);

@@ -1,6 +1,7 @@
-'use client';
+ 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
+import type { Image } from '../types';
 import { useDashboard } from '../hooks/useDashboard';
 import { useViewImage } from '../hooks/useViewImage';
 import { useDeleteImage } from '../hooks/useDeleteImage';
@@ -8,10 +9,10 @@ import { usePullImage } from '../hooks/usePullImage';
 import Header from './Header';
 import useLogout from '../hooks/useLogout';
 import ConfirmationDialog from './ConfirmationDialog';
-import ImageDetailsDialog from './ImageDetailsDialog';
+const ImageDetailsDialog = React.lazy(() => import('./ImageDetailsDialog'));
 import PullInstructionsDialog from './PullInstructionsDialog';
 import RegistryInfo from './RegistryInfo';
-import ImagesTable from './ImagesTable';
+import ImagesTableWrapper from './ImagesTableWrapper';
 import StateWrapper from './StateWrapper';
 import LoadingScreen from './LoadingScreen';
 import { FaTrash } from 'react-icons/fa';
@@ -52,6 +53,10 @@ const DashboardView: React.FC = () => {
   const { dialogOpen: logoutDialogState, open: setLogoutDialogState, close: closeLogoutDialog, handleLogout } = useLogout();
   const t = useTranslations('feature');
 
+  const onViewCallback = React.useCallback((img: Image) => handleView(img), [handleView]);
+  const onPullCallback = React.useCallback((img: Image) => handlePull(img), [handlePull]);
+  const onDeleteCallback = React.useCallback((img: Image) => handleDelete(img), [handleDelete]);
+
   // logout handled inside Header via store
 
   if (!userInfo) {
@@ -78,21 +83,26 @@ const DashboardView: React.FC = () => {
           error={error || undefined}
           state={isLoading ? 'loading' : error ? 'error' : registryInfo?.images?.length ? 'success' : 'empty'}
         >
-          <ImagesTable
-            images={registryInfo.images || []} // Ensure images is always an array
-            onView={handleView}
-            onPull={handlePull}
-            onDelete={handleDelete}
-          />
+            <ImagesTableWrapper
+              isLoading={isLoading}
+              error={error || undefined}
+              images={registryInfo.images || []}
+              registryUrl={userInfo.registryUrl}
+              onView={onViewCallback}
+              onPull={onPullCallback}
+              onDelete={onDeleteCallback}
+            />
         </StateWrapper>
 
         {/* View Dialog */}
         {viewDialogState.view && viewImage && (
-          <ImageDetailsDialog
-            isOpen={viewDialogState.view}
-            image={viewImage}
-            onClose={() => closeViewDialog('view')}
-          />
+          <Suspense fallback={<div className="p-4">Loading...</div>}>
+            <ImageDetailsDialog
+              isOpen={viewDialogState.view}
+              image={viewImage}
+              onClose={() => closeViewDialog('view')}
+            />
+          </Suspense>
         )}
 
         {/* Delete Confirmation Dialog */}
