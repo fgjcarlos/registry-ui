@@ -9,7 +9,7 @@ interface SuccessPageProps {
   onViewRegistry?: () => void;
 }
 
-export default function SuccessPage({ 
+function SuccessPage({ 
   registryUrl, 
   username, 
   onBackToLogin, 
@@ -69,3 +69,5 @@ export default function SuccessPage({
     </div>
   )
 }
+
+export default React.memo(SuccessPage);

@@ -33,4 +33,4 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   );
 };
 
-export default DeleteConfirmationDialog;
+export default React.memo(DeleteConfirmationDialog);

@@ -102,4 +102,4 @@ const DialogsWrapper: React.FC<DialogsWrapperProps> = ({
   );
 };
 
-export default DialogsWrapper;
+export default React.memo(DialogsWrapper);

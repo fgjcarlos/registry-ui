@@ -16,4 +16,4 @@ const LoginHeader: React.FC = () => {
   );
 };
 
-export default LoginHeader;
+export default React.memo(LoginHeader);

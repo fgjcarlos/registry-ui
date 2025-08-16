@@ -12,4 +12,4 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({ children }) => {
   );
 };
 
-export default BackgroundWrapper;
+export default React.memo(BackgroundWrapper);

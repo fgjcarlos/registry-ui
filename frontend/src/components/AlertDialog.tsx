@@ -46,4 +46,4 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
   );
 };
 
-export default AlertDialog;
+export default React.memo(AlertDialog);

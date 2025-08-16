@@ -19,7 +19,7 @@ interface LoginFormProps {
   onFieldChange: (field: keyof FormData) => (value: string) => void;
 }
 
-export default function LoginForm({ 
+function LoginForm({ 
   formData, 
   errors, 
   isLoading, 
@@ -104,3 +104,5 @@ export default function LoginForm({
 
   )
 }
+
+export default React.memo(LoginForm);

@@ -12,4 +12,4 @@ const CenteredContainer: React.FC<CenteredContainerProps> = ({ children }) => {
   );
 };
 
-export default CenteredContainer;
+export default React.memo(CenteredContainer);

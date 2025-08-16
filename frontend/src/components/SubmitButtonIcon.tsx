@@ -8,4 +8,4 @@ const SubmitButtonIcon: React.FC = () => {
   );
 };
 
-export default SubmitButtonIcon;
+export default React.memo(SubmitButtonIcon);

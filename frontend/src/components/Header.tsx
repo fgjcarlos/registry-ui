@@ -42,4 +42,4 @@ const Header: React.FC<NewHeaderProps> = ({ onRefresh, onLogout }) => {
   );
 };
 
-export default Header;
+export default React.memo(Header);
