@@ -17,6 +17,7 @@ import LoadingScreen from './LoadingScreen';
 import { FaTrash } from 'react-icons/fa';
 import BackgroundWrapper from './BackgroundWrapper';
 import ContainerWrapper from './ContainerWrapper';
+import { useTranslations } from 'next-intl';
 
 const DashboardView: React.FC = () => {
   const {
@@ -49,6 +50,7 @@ const DashboardView: React.FC = () => {
   } = usePullImage();
 
   const { dialogOpen: logoutDialogState, open: setLogoutDialogState, close: closeLogoutDialog, handleLogout } = useLogout();
+  const t = useTranslations('feature');
 
   // logout handled inside Header via store
 
@@ -97,9 +99,9 @@ const DashboardView: React.FC = () => {
         {deleteDialogState.delete && deleteImage && (
           <ConfirmationDialog
             isOpen={deleteDialogState.delete}
-            title="Confirm Delete"
+            title={t('dashboard.confirmDeleteTitle')}
             icon={<FaTrash className="text-error" />} // Add delete icon
-            message={`Are you sure you want to delete the image "${deleteImage.name}"? This action cannot be undone.`}
+            message={t('dashboard.confirmDeleteMessage', { name: deleteImage.name })}
             onConfirm={() => {
               handleDelete(deleteImage);
               closeDeleteDialog('delete');
@@ -122,8 +124,8 @@ const DashboardView: React.FC = () => {
         {/* Dialog logout */}
         <ConfirmationDialog
           isOpen={logoutDialogState}
-          title="Confirm Logout"
-          message="Are you sure you want to logout?"
+          title={t('dashboard.confirmLogoutTitle')}
+          message={t('dashboard.confirmLogoutMessage')}
           onConfirm={handleLogout}
           onClose={closeLogoutDialog}
         />

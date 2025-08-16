@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 function isAuthenticated(request: NextRequest): boolean {
+  // Check for session in localStorage (we need to check cookies or headers instead)
+  // Since we can't access localStorage in middleware, we could use a session cookie
+  // For now, we'll check if there's a session cookie or header
   const sessionCookie = request.cookies.get('registry_session');
   
   if (sessionCookie) {
@@ -41,5 +44,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*']
+ matcher: ['/((?!_next|.*\\..*).*)']
 };
