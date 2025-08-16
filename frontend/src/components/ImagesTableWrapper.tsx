@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import StateWrapper from './StateWrapper';
-import ImagesTable from './ImagesTable';
 import EmptyState from './EmptyState';
+import { LoadingState } from './LoadingState';
+const ImagesTable = React.lazy(() => import('./ImagesTable'));
 import { Image } from '../types';
 import { useTranslations } from 'next-intl';
 
@@ -31,12 +32,14 @@ const ImagesTableWrapper: React.FC<ImagesTableWrapperProps> = ({
   return (
     <StateWrapper state={state} error={error}>
       {state === 'success' ? (
-        <ImagesTable
-          images={images}
-          onView={onView}
-          onPull={onPull}
-          onDelete={onDelete}
-        />
+        <Suspense fallback={<LoadingState />}> 
+          <ImagesTable
+            images={images}
+            onView={onView}
+            onPull={onPull}
+            onDelete={onDelete}
+          />
+        </Suspense>
       ) : (
         <EmptyState message={t('registry.emptyMessage', { registryUrl })} />
       )}
