@@ -1,5 +1,6 @@
 import React from 'react'
 import Button from './Button'
+import { useTranslations } from 'next-intl'
 
 interface SuccessPageProps {
   registryUrl: string;
@@ -14,6 +15,7 @@ export default function SuccessPage({
   onBackToLogin, 
   onViewRegistry 
 }: SuccessPageProps) {
+  const t = useTranslations('feature');
   return (
     <div className="min-h-screen bg-gradient-to-br from-success/10 to-success/5 flex items-center justify-center p-8">
       <div className="card bg-base-100 shadow-2xl max-w-md w-full">
@@ -27,14 +29,9 @@ export default function SuccessPage({
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-success mb-4">
-            Connection Successful!
-          </h1>
+          <h1 className="text-3xl font-bold text-success mb-4">{t('success.title')}</h1>
           
-          <p className="text-base-content/70 mb-6">
-            You have successfully connected to the Docker registry. 
-            You can now manage your containers and images.
-          </p>
+          <p className="text-base-content/70 mb-6">{t('success.description')}</p>
 
           <div className="stats shadow bg-base-200 mb-6">
             <div className="stat place-items-center">
@@ -42,7 +39,7 @@ export default function SuccessPage({
               <div className="stat-value text-sm text-primary truncate" title={registryUrl}>
                 {registryUrl}
               </div>
-              <div className="stat-desc">Connected as {username}</div>
+              <div className="stat-desc">{t('header.connectedAs', { username })}</div>
             </div>
           </div>
 
@@ -54,7 +51,7 @@ export default function SuccessPage({
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
-              Back to Login
+              {t('dashboard.backToLogin')}
             </Button>
             <Button 
               variant="outline"
@@ -63,7 +60,7 @@ export default function SuccessPage({
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
               </svg>
-              View Registry
+              {t('actions.view')}
             </Button>
           </div>
 

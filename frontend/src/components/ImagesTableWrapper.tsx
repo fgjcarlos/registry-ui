@@ -3,6 +3,7 @@ import StateWrapper from './StateWrapper';
 import ImagesTable from './ImagesTable';
 import EmptyState from './EmptyState';
 import { Image } from '../types';
+import { useTranslations } from 'next-intl';
 
 interface ImagesTableWrapperProps {
   isLoading: boolean;
@@ -23,22 +24,21 @@ const ImagesTableWrapper: React.FC<ImagesTableWrapperProps> = ({
   onPull,
   onDelete,
 }) => {
+  const t = useTranslations('feature');
+
+  const state = isLoading ? 'loading' : error ? 'error' : images.length === 0 ? 'empty' : 'success';
+
   return (
-    <StateWrapper 
-      isLoading={isLoading} 
-      error={error} 
-      empty={!images.length} 
-      emptyMessage="No images available."
-    >
-      {images.length > 0 ? (
-        <ImagesTable 
-          images={images} 
-          onView={onView} 
-          onPull={onPull} 
-          onDelete={onDelete} 
+    <StateWrapper state={state} error={error}>
+      {state === 'success' ? (
+        <ImagesTable
+          images={images}
+          onView={onView}
+          onPull={onPull}
+          onDelete={onDelete}
         />
       ) : (
-        <EmptyState message={`No images available for registry: ${registryUrl}`} />
+        <EmptyState message={t('registry.emptyMessage', { registryUrl })} />
       )}
     </StateWrapper>
   );

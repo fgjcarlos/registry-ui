@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RegistryApiService, RegistryInfo } from '../services/registryApiService';
+import { useTranslations } from 'next-intl';
+import { RegistryApiService } from '../services/registryApiService';
+import { RegistryInfo, RegistryImage } from '@/types';
 import Button from './Button';
 import Logo from './Logo';
 
@@ -14,6 +16,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ registryUrl, username, authToken, authType, onBackToLogin }: DashboardProps) {
+  const t = useTranslations('feature');
   const [registryInfo, setRegistryInfo] = useState<RegistryInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +67,8 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
             <div className="flex items-center gap-4">
               <Logo size="sm" />
               <div>
-                <h1 className="text-2xl font-bold text-base-content">Registry Dashboard</h1>
-                <p className="text-base-content/70">Connected as {username}</p>
+                <h1 className="text-2xl font-bold text-base-content">{t('dashboard.title')}</h1>
+                <p className="text-base-content/70">{t('header.connectedAs', { username })}</p>
               </div>
             </div>
             <Button variant="ghost" onClick={onBackToLogin}>
@@ -74,9 +77,9 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
           </div>
 
           {/* Loading State */}
-          <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-col items-center justify-center py-20">
             <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-            <p className="text-base-content/70">Loading registry data...</p>
+            <p className="text-base-content/70">{t('dashboard.loading')}</p>
           </div>
         </div>
       </div>
@@ -91,9 +94,9 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <Logo size="sm" />
-              <div>
-                <h1 className="text-2xl font-bold text-base-content">Registry Dashboard</h1>
-                <p className="text-base-content/70">Connected as {username}</p>
+                <div>
+                <h1 className="text-2xl font-bold text-base-content">{t('dashboard.title')}</h1>
+                <p className="text-base-content/70">{t('header.connectedAs', { username })}</p>
               </div>
             </div>
             <Button variant="ghost" onClick={onBackToLogin}>
@@ -102,13 +105,13 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
           </div>
 
           {/* Error State */}
-          <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-col items-center justify-center py-20">
             <div className="text-error text-6xl mb-4">⚠️</div>
-            <h2 className="text-xl font-semibold text-base-content mb-2">Failed to Load Registry Data</h2>
+            <h2 className="text-xl font-semibold text-base-content mb-2">{t('dashboard.errorTitle')}</h2>
             <p className="text-base-content/70 mb-6 text-center max-w-md">{error}</p>
             <div className="flex gap-4">
-              <Button onClick={handleRefresh}>Try Again</Button>
-              <Button variant="ghost" onClick={onBackToLogin}>Back to Login</Button>
+              <Button onClick={handleRefresh}>{t('dashboard.tryAgain')}</Button>
+              <Button variant="ghost" onClick={onBackToLogin}>{t('dashboard.backToLogin')}</Button>
             </div>
           </div>
         </div>
@@ -123,17 +126,17 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Logo size="sm" />
-            <div>
-              <h1 className="text-2xl font-bold text-base-content">Registry Dashboard</h1>
-              <p className="text-base-content/70">Connected as {username}</p>
+              <div>
+              <h1 className="text-2xl font-bold text-base-content">{t('dashboard.title')}</h1>
+              <p className="text-base-content/70">{t('header.connectedAs', { username })}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+            <div className="flex gap-2">
             <Button variant="ghost" size="sm" onClick={handleRefresh}>
-              🔄 Refresh
+              🔄 {t('header.refresh')}
             </Button>
             <Button variant="ghost" onClick={onBackToLogin}>
-              Back to Login
+              {t('dashboard.backToLogin')}
             </Button>
           </div>
         </div>
@@ -142,12 +145,12 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
         <div className="bg-base-100 rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-base-content mb-1">Registry Information</h2>
+              <h2 className="text-lg font-semibold text-base-content mb-1">{t('registry.infoTitle')}</h2>
               <p className="text-base-content/70">
-                <span className="font-medium">URL:</span> {registryUrl}
+                <span className="font-medium">{t('registry.urlLabel')}</span> {registryUrl}
               </p>
               <p className="text-base-content/70">
-                <span className="font-medium">Total Images:</span> {registryInfo?.totalImages || 0}
+                <span className="font-medium">{t('registry.totalImagesLabel')}</span> {registryInfo?.totalImages || 0}
               </p>
             </div>
             <div className="text-right">
@@ -161,7 +164,7 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
         {registryInfo && registryInfo.images.length > 0 ? (
           <div className="bg-base-100 rounded-lg shadow-md overflow-hidden">
             <div className="px-6 py-4 border-b border-base-300">
-              <h3 className="text-lg font-semibold text-base-content">Docker Images</h3>
+              <h3 className="text-lg font-semibold text-base-content">{t('registry.imagesLabel')}</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="table table-zebra w-full">
@@ -175,7 +178,7 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
                   </tr>
                 </thead>
                 <tbody>
-                  {registryInfo.images.map((image, index) => (
+                  {registryInfo.images.map((image: RegistryImage, index: number) => (
                     <tr key={index} className="hover">
                       <td>
                         <div className="font-mono text-sm font-medium">{image.name}</div>
@@ -183,13 +186,13 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
                       <td>
                         <div className="flex flex-wrap gap-1">
                           {image.tags.length > 0 ? (
-                            image.tags.slice(0, 3).map((tag, tagIndex) => (
+                            image.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
                               <span key={tagIndex} className="badge badge-outline badge-sm">
                                 {tag}
                               </span>
                             ))
                           ) : (
-                            <span className="text-base-content/50 text-sm">No tags</span>
+                            <span className="text-base-content/50 text-sm">{t('registry.noTags')}</span>
                           )}
                           {image.tags.length > 3 && (
                             <span className="badge badge-ghost badge-sm">
@@ -199,8 +202,8 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
                         </div>
                       </td>
                       <td>
-                        <span className="text-sm text-base-content/70">
-                          {image.lastModified ? new Date(image.lastModified).toLocaleDateString() : 'Unknown'}
+                            <span className="text-sm text-base-content/70">
+                          {image.lastModified ? new Date(image.lastModified).toLocaleDateString() : t('registry.unknown')}
                         </span>
                       </td>
                       <td>
@@ -209,10 +212,10 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
                       <td>
                         <div className="flex gap-1">
                           <Button size="xs" variant="outline">
-                            View
+                            {t('actions.view')}
                           </Button>
                           <Button size="xs" variant="ghost">
-                            Pull
+                            {t('actions.pull')}
                           </Button>
                         </div>
                       </td>

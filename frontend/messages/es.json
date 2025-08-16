@@ -1,0 +1,63 @@
+{
+  "feature": {
+    "header": {
+      "title": "Panel del Registro",
+      "connectedAs": "Conectado como {username}",
+      "refresh": "Actualizar",
+      "logout": "Cerrar sesión"
+    },
+    "login": {
+      "registryUrl": "URL del registro",
+      "username": "Usuario",
+      "password": "Contraseña",
+      "connect": "Conectar al registro",
+      "connecting": "Conectando..."
+    },
+    "dashboard": {
+      "confirmDeleteTitle": "Confirmar eliminación",
+      "confirmDeleteMessage": "¿Seguro que quieres eliminar la imagen \"{name}\"? Esta acción no se puede deshacer.",
+      "confirmLogoutTitle": "Confirmar cierre de sesión",
+      "confirmLogoutMessage": "¿Estás seguro de que quieres cerrar la sesión?",
+      "title": "Panel del Registro",
+      "loading": "Cargando datos del registro...",
+      "errorTitle": "Error al cargar los datos del registro",
+      "tryAgain": "Reintentar",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "footer": {
+      "poweredBy": "Creado con {provider}"
+    },
+    "help": {
+      "needHelp": "¿Necesitas ayuda? Consulta la",
+      "documentation": "documentación"
+    },
+    "home": {
+      "welcomePrefix": "Bienvenido a",
+      "connectDescription": "Conéctate a tu registro Docker"
+    },
+    "registry": {
+      "infoTitle": "Información del registro",
+      "urlLabel": "URL:",
+      "totalImagesLabel": "Imágenes totales:",
+      "imagesLabel": "Imágenes",
+      "noTags": "Sin etiquetas",
+      "unknown": "Desconocido"
+    },
+    "actions": {
+      "view": "Ver",
+      "pull": "Pull",
+      "close": "Cerrar"
+    },
+    "success": {
+      "title": "¡Conexión exitosa!",
+      "description": "Te has conectado correctamente al registro Docker. Ahora puedes administrar tus contenedores e imágenes."
+    },
+    "image": {
+      "detailsTitle": "Detalles de la imagen",
+      "name": "Nombre",
+      "tags": "Etiquetas",
+      "lastModified": "Última modificación",
+      "size": "Tamaño"
+    }
+  }
+}

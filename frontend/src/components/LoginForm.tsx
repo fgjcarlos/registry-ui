@@ -9,6 +9,7 @@ import Divider from "./Divider";
 import SubmitButtonIcon from "./SubmitButtonIcon";
 import Footer from "./Footer";
 import HelpSection from "./HelpSection";
+import { useTranslations } from 'next-intl';
 
 interface LoginFormProps {
   formData: FormData;
@@ -25,6 +26,7 @@ export default function LoginForm({
   onSubmit, 
   onFieldChange 
 }: LoginFormProps) {
+  const t = useTranslations('feature');
   return (
   
         <div className="w-full max-w-md">
@@ -47,7 +49,7 @@ export default function LoginForm({
 
               <form onSubmit={onSubmit} className="space-y-6">
                 <FormControl>
-                  <LabelText label="Registry URL" required={true} />
+                  <LabelText label={t('login.registryUrl')} required={true} />
                   <UrlRegistryInput
                     value={formData.registryUrl}
                     onChange={onFieldChange('registryUrl')}
@@ -57,7 +59,7 @@ export default function LoginForm({
                 </FormControl>
 
                 <FormControl>
-                  <LabelText label="Username" required={true} />
+                  <LabelText label={t('login.username')} required={true} />
                   <UsernameInput
                     value={formData.username}
                     onChange={onFieldChange('username')}
@@ -67,7 +69,7 @@ export default function LoginForm({
                 </FormControl>
 
                 <FormControl>
-                  <LabelText label="Password" required={true} />
+                  <LabelText label={t('login.password')} required={true} />
                   <PasswordInput
                     value={formData.password}
                     onChange={onFieldChange('password')}
@@ -86,7 +88,7 @@ export default function LoginForm({
                   disabled={isLoading}
                 >
                   <SubmitButtonIcon />
-                  {isLoading ? 'Connecting...' : 'Connect to Registry'}
+                  {isLoading ? t('login.connecting') : t('login.connect')}
                 </Button>
               </form>
 

@@ -1,0 +1,63 @@
+{
+  "feature": {
+    "header": {
+      "title": "Registry Dashboard",
+      "connectedAs": "Connected as {username}",
+      "refresh": "Refresh",
+      "logout": "Logout"
+    },
+    "login": {
+      "registryUrl": "Registry URL",
+      "username": "Username",
+      "password": "Password",
+      "connect": "Connect to Registry",
+      "connecting": "Connecting..."
+    },
+    "dashboard": {
+      "confirmDeleteTitle": "Confirm Delete",
+      "confirmDeleteMessage": "Are you sure you want to delete the image \"{name}\"? This action cannot be undone.",
+      "confirmLogoutTitle": "Confirm Logout",
+      "confirmLogoutMessage": "Are you sure you want to logout?",
+      "title": "Registry Dashboard",
+      "loading": "Loading registry data...",
+      "errorTitle": "Failed to Load Registry Data",
+      "tryAgain": "Try Again",
+      "backToLogin": "Back to Login"
+    },
+    "footer": {
+      "poweredBy": "Powered by {provider}"
+    },
+    "help": {
+      "needHelp": "Need help? Check the",
+      "documentation": "documentation"
+    },
+    "home": {
+      "welcomePrefix": "Welcome to",
+      "connectDescription": "Connect to your Docker registry"
+    },
+    "registry": {
+      "infoTitle": "Registry Information",
+      "urlLabel": "URL:",
+      "totalImagesLabel": "Total Images:",
+      "imagesLabel": "Images",
+      "noTags": "No tags",
+      "unknown": "Unknown"
+    },
+    "actions": {
+      "view": "View",
+      "pull": "Pull",
+      "close": "Close"
+    },
+    "success": {
+      "title": "Connection Successful!",
+      "description": "You have successfully connected to the Docker registry. You can now manage your containers and images."
+    },
+    "image": {
+      "detailsTitle": "Image Details",
+      "name": "Name",
+      "tags": "Tags",
+      "lastModified": "Last Modified",
+      "size": "Size"
+    }
+  }
+}
