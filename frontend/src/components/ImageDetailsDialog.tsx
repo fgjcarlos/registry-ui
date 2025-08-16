@@ -39,4 +39,4 @@ const ImageDetailsDialog: React.FC<ImageDetailsDialogProps> = ({
   );
 };
 
-export default ImageDetailsDialog;
+export default React.memo(ImageDetailsDialog);

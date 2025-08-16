@@ -1,6 +1,6 @@
  'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Image } from '../types';
 import { useDashboard } from '../hooks/useDashboard';
 import { useViewImage } from '../hooks/useViewImage';
@@ -9,7 +9,7 @@ import { usePullImage } from '../hooks/usePullImage';
 import Header from './Header';
 import useLogout from '../hooks/useLogout';
 import ConfirmationDialog from './ConfirmationDialog';
-import ImageDetailsDialog from './ImageDetailsDialog';
+const ImageDetailsDialog = React.lazy(() => import('./ImageDetailsDialog'));
 import PullInstructionsDialog from './PullInstructionsDialog';
 import RegistryInfo from './RegistryInfo';
 import ImagesTableWrapper from './ImagesTableWrapper';
@@ -96,11 +96,13 @@ const DashboardView: React.FC = () => {
 
         {/* View Dialog */}
         {viewDialogState.view && viewImage && (
-          <ImageDetailsDialog
-            isOpen={viewDialogState.view}
-            image={viewImage}
-            onClose={() => closeViewDialog('view')}
-          />
+          <Suspense fallback={<div className="p-4">Loading...</div>}>
+            <ImageDetailsDialog
+              isOpen={viewDialogState.view}
+              image={viewImage}
+              onClose={() => closeViewDialog('view')}
+            />
+          </Suspense>
         )}
 
         {/* Delete Confirmation Dialog */}

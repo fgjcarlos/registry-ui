@@ -37,4 +37,4 @@ const PullInstructionsDialog: React.FC<PullInstructionsDialogProps> = ({
   );
 };
 
-export default PullInstructionsDialog;
+export default React.memo(PullInstructionsDialog);

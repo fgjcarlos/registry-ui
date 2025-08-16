@@ -12,4 +12,4 @@ const HelpSection: React.FC = () => {
   );
 };
 
-export default HelpSection;
+export default React.memo(HelpSection);
