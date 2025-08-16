@@ -8,4 +8,4 @@ const FormControl: React.FC<FormControlProps> = ({ children }) => {
   return <div className="form-control">{children}</div>;
 };
 
-export default FormControl;
+export default React.memo(FormControl);

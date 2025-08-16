@@ -12,4 +12,4 @@ const ContainerWrapper: React.FC<ContainerWrapperProps> = ({ children }) => {
   );
 };
 
-export default ContainerWrapper;
+export default React.memo(ContainerWrapper);

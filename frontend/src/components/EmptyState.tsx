@@ -8,4 +8,4 @@ const EmptyState: React.FC<{ message?: string }> = ({ message = 'No data availab
   );
 };
 
-export default EmptyState;
+export default React.memo(EmptyState);

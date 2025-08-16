@@ -14,5 +14,4 @@ const GeneralErrorAlert: React.FC<GeneralErrorAlertProps> = ({ message }) => {
     </div>
   );
 };
-
-export default GeneralErrorAlert;
+export default React.memo(GeneralErrorAlert);

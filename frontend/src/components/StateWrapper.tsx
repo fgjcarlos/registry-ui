@@ -21,4 +21,4 @@ const StateWrapper: React.FC<StateWrapperProps> = ({state, error, children}) => 
   return stateWrapper[state]
 };
 
-export default StateWrapper;
+export default React.memo(StateWrapper);

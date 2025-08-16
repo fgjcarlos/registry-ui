@@ -29,5 +29,6 @@ const LoadingState: React.FC = () => {
   );
 };
 
-export default DashboardState;
-export { LoadingState };
+export default React.memo(DashboardState);
+export const LoadingStateMemo = React.memo(LoadingState);
+export { LoadingStateMemo as LoadingState };

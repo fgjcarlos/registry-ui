@@ -15,7 +15,7 @@ interface DashboardProps {
   onBackToLogin: () => void;
 }
 
-export default function Dashboard({ registryUrl, username, authToken, authType, onBackToLogin }: DashboardProps) {
+function Dashboard({ registryUrl, username, authToken, authType, onBackToLogin }: DashboardProps) {
   const t = useTranslations('feature');
   const [registryInfo, setRegistryInfo] = useState<RegistryInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -250,3 +250,5 @@ export default function Dashboard({ registryUrl, username, authToken, authType, 
     </div>
   );
 }
+
+export default React.memo(Dashboard);

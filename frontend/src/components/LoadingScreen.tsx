@@ -8,4 +8,4 @@ const LoadingScreen: React.FC = () => {
   );
 };
 
-export default LoadingScreen;
+export default React.memo(LoadingScreen);

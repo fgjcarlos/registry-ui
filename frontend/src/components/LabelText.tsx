@@ -13,5 +13,4 @@ const LabelText: React.FC<LabelTextProps> = ({ label, required = false }) => {
     </label>
   );
 };
-
-export default LabelText;
+export default React.memo(LabelText);

@@ -18,4 +18,4 @@ const Dialog: React.FC<DialogProps> = ({ open, children }) => {
   );
 };
 
-export default Dialog;
+export default React.memo(Dialog);

@@ -145,4 +145,4 @@ const DashboardView: React.FC = () => {
   );
 };
 
-export default DashboardView;
+export default React.memo(DashboardView);

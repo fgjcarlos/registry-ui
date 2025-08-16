@@ -5,7 +5,7 @@ interface LogoProps {
   className?: string;
 }
 
-export default function Logo({ size = 'md', className = '' }: LogoProps) {
+function Logo({ size = 'md', className = '' }: LogoProps) {
   const sizeClasses = {
     sm: 'w-12 h-12',
     md: 'w-16 h-16', 
@@ -36,3 +36,5 @@ export default function Logo({ size = 'md', className = '' }: LogoProps) {
     </div>
   )
 }
+
+export default React.memo(Logo);

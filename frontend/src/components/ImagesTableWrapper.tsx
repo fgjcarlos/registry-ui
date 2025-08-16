@@ -47,4 +47,4 @@ const ImagesTableWrapper: React.FC<ImagesTableWrapperProps> = ({
   );
 };
 
-export default ImagesTableWrapper;
+export default React.memo(ImagesTableWrapper);
